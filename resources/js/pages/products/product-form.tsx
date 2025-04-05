@@ -1,3 +1,4 @@
+import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CustomTextarea } from '@/components/ui/custom-textarea';
@@ -28,11 +29,10 @@ export default function ProductForm() {
 
         post(route('products.store'), {
             onSuccess: () => console.log('Form Submitted'),
-        })
+        });
 
         console.log('data', data);
-    }
-
+    };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -69,6 +69,7 @@ export default function ProductForm() {
                                         autoFocus
                                         tabIndex={1}
                                     />
+                                    <InputError message={errors.name} />
                                 </div>
 
                                 {/* Product Description */}
@@ -84,6 +85,7 @@ export default function ProductForm() {
                                         tabIndex={2}
                                         rows={3}
                                     />
+                                    <InputError message={errors.description} />
                                 </div>
 
                                 {/* Product Price */}
@@ -98,12 +100,14 @@ export default function ProductForm() {
                                         placeholder="Product Price"
                                         tabIndex={3}
                                     />
+                                    <InputError message={errors.price} />
                                 </div>
 
                                 {/* Product Featured Image */}
                                 <div className="grid gap-2">
                                     <Label htmlFor="featured_image">Featured Image</Label>
                                     <Input id="featured_image" name="featured_image" type="file" tabIndex={4} />
+                                    <InputError message={errors.featured_image} />
                                 </div>
 
                                 {/* Submit Button */}
