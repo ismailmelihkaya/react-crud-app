@@ -34,6 +34,13 @@ export default function ProductForm() {
         console.log('data', data);
     };
 
+    // File Upload Handler
+    const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files.length > 0) {
+            setData('featured_image', e.target.files[0]); 
+        }
+    }
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Product Management" />
@@ -78,7 +85,7 @@ export default function ProductForm() {
 
                                     <CustomTextarea
                                         value={data.description}
-                                        onChange={(e) => setData('name', e.target.value)}
+                                        onChange={(e) => setData('description', e.target.value)}
                                         id="description"
                                         name="description"
                                         placeholder="Product Description"
@@ -93,7 +100,7 @@ export default function ProductForm() {
                                     <Label htmlFor="price">Product Price</Label>
                                     <Input
                                         value={data.price}
-                                        onChange={(e) => setData('name', e.target.value)}
+                                        onChange={(e) => setData('price', e.target.value)}
                                         id="price"
                                         name="price"
                                         type="text"
@@ -106,7 +113,9 @@ export default function ProductForm() {
                                 {/* Product Featured Image */}
                                 <div className="grid gap-2">
                                     <Label htmlFor="featured_image">Featured Image</Label>
-                                    <Input id="featured_image" name="featured_image" type="file" tabIndex={4} />
+                                    
+                                    <Input onChange={handleFileUpload} id="featured_image" name="featured_image" type="file" tabIndex={4} />
+                                    
                                     <InputError message={errors.featured_image} />
                                 </div>
 
