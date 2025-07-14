@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ProductFormRequest;
 use App\Models\Product;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class ProductController extends Controller
@@ -14,7 +16,18 @@ class ProductController extends Controller
      */
     public function index()
     {
-        return Inertia::render('products/index');
+        $products = Product::latest()->get()->map(fn($product) => [
+            'id' => $product->id,
+            'name' => $product->name,
+            'description' => $product->description,
+            'price' => $product->price,
+            'featured_image' => $product->featured_image,
+            'created_at' => $product->created_at->format('d M Y'),
+        ]);
+
+        return Inertia::render('products/index', [
+            'products' => $products,
+        ]);
     }
 
     /**
@@ -32,7 +45,34 @@ class ProductController extends Controller
      */
     public function store(ProductFormRequest $request)
     {
-        dd($request->all());
+        try {
+            $featuredImage = null;
+            $featuredImageOriginalName = null;
+
+            if ($request->file('featured_image')) {
+                $featuredImage = $request->file('featured_image');
+                $featuredImageOriginalName = $featuredImage->getClientOriginalName();
+                $featuredImage = $featuredImage->store('products', 'public');
+            }
+
+            $product = Product::create([
+                'name' => $request->name,
+                'description' => $request->description,
+                'price' => $request->price,
+                'featured_image' => $featuredImage,
+                'featured_image_original_name' => $featuredImageOriginalName,
+            ]);
+
+            if ($product) {
+                return redirect()->route('products.index')->with('success', 'Product created successfully.');
+            }
+
+            return redirect()->back()->with('error', 'Unable to create product. Please try again!');
+
+        } catch (Exception $e) {
+            Log::error('Product creation failed: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'An unexpected error occurred. Please try again!');
+        }
     }
 
     /**
