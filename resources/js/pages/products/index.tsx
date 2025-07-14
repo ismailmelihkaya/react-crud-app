@@ -2,6 +2,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
+import { CirclePlusIcon, Eye, Pencil, Trash, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -57,11 +58,11 @@ export default function Index({ ...props }: { products: Product[] }) {
                 {/* Add product button - start */}
                 <div className="ml-auto">
                     <Link
-                        className="text-md cursor-pointer rounded-lg bg-indigo-800 px-4 py-2 text-white hover:opacity-90"
+                        className="flex items-center text-md cursor-pointer rounded-lg bg-indigo-800 px-4 py-2 text-white hover:opacity-90"
                         as="button"
                         href={route('products.create')}
                     >
-                        Add Product
+                        <CirclePlusIcon className='me-2' />Add Product
                     </Link>
                 </div>
                 {/* Add product button - finish */}
@@ -87,10 +88,38 @@ export default function Index({ ...props }: { products: Product[] }) {
                                     <td className="border px-4 py-2 text-center">{product.description}</td>
                                     <td className="border px-4 py-2 text-center">₺{product.price}</td>
                                     <td className="border px-4 py-2 text-center">
-                                        <img src={"http://127.0.0.1:8000/storage/"+product.featured_image} alt={product.name} className="h-16 w-16 object-cover" />
+                                        <img
+                                            src={'http://127.0.0.1:8000/storage/' + product.featured_image}
+                                            alt={product.name}
+                                            className="h-16 w-16 object-cover"
+                                        />
                                     </td>
                                     <td className="border px-4 py-2 text-center">{product.created_at}</td>
-                                    <td className="border px-4 py-2 text-center">Action</td>
+                                    <td className="border px-4 py-2 text-center">
+                                        <Link
+                                            as="button"
+                                            className="cursor-pointer rounded-lg bg-sky-600 p-2 text-white  hover:opacity-90"
+                                            href={route('products.show', product.id)}
+                                        >
+                                            <Eye size={18} />
+                                        </Link>
+
+                                        <Link
+                                            as="button"
+                                            className="ms-2 cursor-pointer rounded-lg bg-green-600 p-2 text-white hover:opacity-90"
+                                            href={route('products.show', product.id)}
+                                        >
+                                            <Pencil size={18} />
+                                        </Link>
+                                        
+                                        <Link
+                                            as="button"
+                                            className="ms-2 cursor-pointer rounded-lg bg-red-600 p-2 text-white hover:opacity-90"
+                                            href={route('products.show', product.id)}
+                                        >
+                                            <Trash2 size={18} />
+                                        </Link>
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>

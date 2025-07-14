@@ -7,19 +7,22 @@ import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/react';
+import { ArrowLeft } from 'lucide-react';
 
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Create Product',
-        href: route('products.create'),
-    },
-];
+export default function ProductForm({ ...props }) {
+    const { product, isView, isEdit } = props;
 
-export default function ProductForm() {
+    const breadcrumbs: BreadcrumbItem[] = [
+        {
+            title: `${isView ? 'Show' : isEdit ? 'Update' : 'Create'} Product`,
+            href: route('products.create'),
+        },
+    ];
+
     const { data, setData, post, processing, errors, reset } = useForm({
-        name: '',
-        description: '',
-        price: '',
+        name: product?.name || '',
+        description: product?.description || '',
+        price: product?.price || '',
         featured_image: null as File | null,
     });
 
@@ -37,9 +40,9 @@ export default function ProductForm() {
     // File Upload Handler
     const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files.length > 0) {
-            setData('featured_image', e.target.files[0]); 
+            setData('featured_image', e.target.files[0]);
         }
-    }
+    };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -47,16 +50,16 @@ export default function ProductForm() {
             <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
                 <Card>
                     <CardHeader>
-                        <CardTitle>Create Product</CardTitle>
+                        <CardTitle>{isView ? 'Show' : isEdit ? 'Update' : 'Create'} Product</CardTitle>
 
                         {/* Back to Products Butotn */}
                         <div className="ml-auto">
                             <Link
                                 as="button"
-                                className="text-md cursor-pointer rounded-lg bg-indigo-800 px-4 py-2 text-white hover:opacity-90"
+                                className="text-md flex cursor-pointer items-center rounded-lg bg-indigo-800 px-4 py-2 text-white hover:opacity-90"
                                 href={route('products.index')}
                             >
-                                Back to Products
+                                <ArrowLeft className="me-2" /> Back to Products
                             </Link>
                         </div>
                     </CardHeader>
@@ -75,6 +78,7 @@ export default function ProductForm() {
                                         placeholder="Product Name"
                                         autoFocus
                                         tabIndex={1}
+                                        disabled={isView || processing}
                                     />
                                     <InputError message={errors.name} />
                                 </div>
@@ -91,6 +95,7 @@ export default function ProductForm() {
                                         placeholder="Product Description"
                                         tabIndex={2}
                                         rows={3}
+                                        disabled={isView || processing}
                                     />
                                     <InputError message={errors.description} />
                                 </div>
@@ -106,24 +111,46 @@ export default function ProductForm() {
                                         type="text"
                                         placeholder="Product Price"
                                         tabIndex={3}
+                                        disabled={isView || processing}
                                     />
                                     <InputError message={errors.price} />
                                 </div>
 
                                 {/* Product Featured Image */}
-                                <div className="grid gap-2">
-                                    <Label htmlFor="featured_image">Featured Image</Label>
-                                    
-                                    <Input onChange={handleFileUpload} id="featured_image" name="featured_image" type="file" tabIndex={4} />
-                                    
-                                    <InputError message={errors.featured_image} />
-                                </div>
+
+                                {!isView ? (
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="featured_image">Featured Image</Label>
+
+                                        <Input
+                                            onChange={handleFileUpload}
+                                            id="featured_image"
+                                            name="featured_image"
+                                            type="file"
+                                            tabIndex={4}
+                                            // disabled={isView || processing}
+                                        />
+
+                                        <InputError message={errors.featured_image} />
+                                    </div>
+                                ) : (
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="featured_image">Featured Image</Label>
+                                        <img
+                                            src={`/${'storage/' + product.featured_image}`}
+                                            alt="Featured Image"
+                                            className="h-40 rounded-lg border"
+                                        />
+                                    </div>
+                                )}
 
                                 {/* Submit Button */}
-                                <Button type="submit" className="mt-4 w-fit cursor-pointer" tabIndex={4}>
-                                    {/* {processing && <LoaderCircle className="h-4 w-4 animate-spin" />} */}
-                                    Save Product
-                                </Button>
+                                {!isView && (
+                                    <Button type="submit" className="mt-4 w-fit cursor-pointer" tabIndex={4}>
+                                        {/* {processing && <LoaderCircle className="h-4 w-4 animate-spin" />} */}
+                                        Save Product
+                                    </Button>
+                                )}
                             </div>
                         </form>
                     </CardContent>
